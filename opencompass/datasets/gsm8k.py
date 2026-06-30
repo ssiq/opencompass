@@ -43,10 +43,25 @@ def gsm8k_dataset_postprocess(text: str) -> str:
 @TEXT_POSTPROCESSORS.register_module('gsm8k')
 def gsm8k_postprocess(text: str) -> str:
     text = text.split('Question:')[0]
-    numbers = re.findall(r'\-?\d+\.\d+|\-?\d+', text)
+    number_pattern = r'\-?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?'
+    answer_pattern = re.compile(
+        r'(?i)(?:####|\b(?:the\s+)?(?:final\s+)?answer\s*(?:is|=|:))')
+
+    def get_last_number(value: str):
+        numbers = re.findall(number_pattern, value)
+        if numbers:
+            return numbers[-1].replace(',', '')
+
+    for line in reversed(text.splitlines()):
+        if answer_pattern.search(line):
+            answer = get_last_number(line)
+            if answer is not None:
+                return answer
+
+    numbers = re.findall(number_pattern, text)
     if not numbers:
         return 'NULL'
-    return numbers[-1]
+    return numbers[-1].replace(',', '')
 
 
 class Gsm8kEvaluator(BaseEvaluator):
