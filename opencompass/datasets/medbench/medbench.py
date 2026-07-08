@@ -533,6 +533,12 @@ class MedBenchEvaluator_Doc_parsing(BaseEvaluator):
             references_revise.append(temp_ref)
         return calc_nlg_task_scores(references_revise, predictions)
 
+
+@ICL_EVALUATORS.register_module()
+class MedBenchEvaluator_SMDoc(MedBenchEvaluator_Doc_parsing):
+    pass
+
+
 @ICL_EVALUATORS.register_module()
 class MedBenchEvaluator_NLG(BaseEvaluator):
 
