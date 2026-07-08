@@ -108,8 +108,8 @@ class GPQASimpleEvalDataset(BaseDataset):
 
 @TEXT_POSTPROCESSORS.register_module()
 def GPQA_Simple_Eval_postprocess(text: str) -> str:
-    ANSWER_PATTERN = r'(?i)ANSWER\s*:\s*([A-D])'
-    match = re.search(ANSWER_PATTERN, text)
-    if match:
-        return match.group(1)
+    ANSWER_PATTERN = r'(?i)ANSWER\s*:\s*([A-D])\b'
+    matches = re.findall(ANSWER_PATTERN, text)
+    if matches:
+        return matches[-1]
     return None
