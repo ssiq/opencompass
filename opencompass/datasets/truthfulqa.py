@@ -84,17 +84,18 @@ class TruthfulQAEvaluator(BaseEvaluator):
     }
 
     def __init__(
-            self,
-            truth_model: str = 'allenai/truthfulqa-truth-judge-llama2-7B',
-            info_model: str = 'allenai/truthfulqa-info-judge-llama2-7B',
-            metrics=('truth'),
-            key='ENV',
+        self,
+        truth_model: str = 'allenai/truthfulqa-truth-judge-llama2-7B',
+        info_model: str = 'allenai/truthfulqa-info-judge-llama2-7B',
+        metrics='truth',
+        key='ENV',
     ):
         self.API_MODEL = {'truth': truth_model, 'info': info_model}
         all_metrics = set(self.SCORE_KEY.keys()) | set(self.API_MODEL.keys())
-        print('all_metrics', all_metrics, 'metrics', metrics, truth_model)
-        metrics = [metrics]
-        assert set(metrics).issubset(all_metrics)
+        metrics = self._normalize_metrics(metrics)
+        assert set(metrics).issubset(all_metrics), (
+            f'Unsupported metrics: {set(metrics) - all_metrics}. '
+            f'Available metrics are: {all_metrics}.')
         self.metrics = list()
         self.api_metrics = list()
         for metric in metrics:
@@ -102,7 +103,7 @@ class TruthfulQAEvaluator(BaseEvaluator):
                 self.metrics.append(metric)
             if metric in self.API_MODEL.keys():
                 assert self.API_MODEL.get(metric), (
-                    f'`{metric}_model` should be set to perform API eval.'
+                    f'{metric}_model should be set to perform API eval.'
                     'If you want to perform basic metric eval, '
                     f'please refer to the docstring of {__file__} '
                     'for more details.')
@@ -113,6 +114,26 @@ class TruthfulQAEvaluator(BaseEvaluator):
                 device)
             self.tokenizer = AutoTokenizer.from_pretrained(truth_model)
         super().__init__()
+
+    @staticmethod
+    def _normalize_metrics(metrics):
+        if isinstance(metrics, str):
+            return [metrics]
+        return list(metrics)
+
+    @staticmethod
+    def _load_basic_metric(metric):
+        try:
+            return evaluate.load(metric)
+        except (FileNotFoundError, ImportError) as exc:
+            if metric == 'bleurt':
+                raise ImportError(
+                    'TruthfulQA BLEURT evaluation requires the optional '
+                    'Google BLEURT package. Install it with '
+                    'pip install git+https://github.com/'
+                    'google-research/bleurt.git, or choose another '
+                    'basic metric such as bleu or rouge.') from exc
+            raise
 
     def score(self, predictions, references):
         assert len(predictions) == len(references)
@@ -125,7 +146,7 @@ class TruthfulQAEvaluator(BaseEvaluator):
 
     def basic_score(self, predictions, references):
         # prepare all metrics
-        metrics = {key: evaluate.load(key) for key in self.metrics}
+        metrics = {key: self._load_basic_metric(key) for key in self.metrics}
         # create empty scores list
         scores = {
             key: dict(max=list(), diff=list(), acc=list())
