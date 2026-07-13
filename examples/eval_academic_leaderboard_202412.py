@@ -25,7 +25,7 @@ with read_base():
     # Instruction Following
     from opencompass.configs.datasets.IFEval.IFEval_gen_353ae7 import \
         ifeval_datasets
-    from opencompass.configs.datasets.livecodebench.livecodebench_gen_a4f90b import \
+    from opencompass.configs.datasets.livecodebench.livecodebench_gen_9356e2 import \
         LCBCodeGeneration_dataset
     from opencompass.configs.datasets.math.math_prm800k_500_0shot_cot_gen import \
         math_datasets

@@ -39,7 +39,7 @@ with read_base():
         kcle_datasets  # noqa: F401, E501
     from opencompass.configs.datasets.korbench.korbench_single_0shot_cascade_eval_gen_56cf43 import \
         korbench_0shot_single_datasets  # noqa: F401, E501
-    from opencompass.configs.datasets.livecodebench.livecodebench_gen_a4f90b import \
+    from opencompass.configs.datasets.livecodebench.livecodebench_gen_9356e2 import \
         LCBCodeGeneration_dataset  # noqa: F401, E501
     from opencompass.configs.datasets.livemathbench.livemathbench_hard_custom_cascade_eval_gen_4bce59 import \
         livemathbench_datasets  # noqa: F401, E501

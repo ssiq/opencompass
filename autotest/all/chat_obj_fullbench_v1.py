@@ -123,7 +123,7 @@ with read_base():
     from opencompass.configs.datasets.korbench.korbench_single_0shot_cascade_eval_gen_56cf43 import \
         korbench_0shot_single_datasets as \
         korbench_cascade_datasets  # noqa: F401, E501
-    from opencompass.configs.datasets.livecodebench.livecodebench_gen_a4f90b import \
+    from opencompass.configs.datasets.livecodebench.livecodebench_gen_9356e2 import \
         LCBCodeGeneration_dataset  # noqa: F401, E501
     from opencompass.configs.datasets.livecodebench.livecodebench_gen_b2b0fd import \
         LCB_datasets  # noqa: F401, E501

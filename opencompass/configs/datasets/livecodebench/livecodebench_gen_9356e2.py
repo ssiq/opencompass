@@ -117,18 +117,18 @@ lcb_test_output_reader_cfg = dict(
     output_column='evaluation_sample',
 )
 
-system_prompt = 'You are an expert Python programmer. You will be given a question (problem specification) and will generate a correct Python program that matches the specification and passes all tests. You will NOT return anything except for the program.'
+system_prompt = TestOutputPromptConstants.SYSTEM_MESSAGE_CHAT_GENERIC
 
 lcb_test_output_infer_cfg = dict(
     prompt_template=dict(
         type=PromptTemplate,
         template=dict(
-            # begin=[
-            #     dict(
-            #         role='SYSTEM',
-            #         prompt=system_prompt
-            #     ),
-            # ],
+            begin=[
+                dict(
+                    role='SYSTEM',
+                    prompt=system_prompt
+                ),
+            ],
             round=[
                 dict(
                     role='HUMAN',

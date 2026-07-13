@@ -30,7 +30,7 @@ with read_base():
     from opencompass.configs.datasets.IFBench.IFBench_gen import (
         ifbench_datasets,
     )
-    from opencompass.configs.datasets.livecodebench.livecodebench_gen_a4f90b import (
+    from opencompass.configs.datasets.livecodebench.livecodebench_gen_9356e2 import (
         LCBCodeGeneration_dataset,
     )
     from opencompass.configs.datasets.SmolInstruct.smolinstruct_0shot_instruct_gen import (
