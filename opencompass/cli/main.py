@@ -22,12 +22,14 @@ from opencompass.utils.run import (fill_eval_cfg, fill_infer_cfg,
 
 
 def _run_eval_tasks(runner, tasks):
+    failed_tasks = 0
     if isinstance(tasks, list) and len(tasks) != 0 and isinstance(tasks[0],
                                                                   list):
         for task_part in tasks:
-            runner(task_part)
+            failed_tasks += runner(task_part)
     else:
-        runner(tasks)
+        failed_tasks += runner(tasks)
+    return failed_tasks
 
 
 def _is_eval_daemon(task_type) -> bool:
@@ -350,6 +352,7 @@ def main():
     eval_tasks = None
     eval_runner = None
     eval_daemon = False
+    failed_tasks = 0
 
     # ========================
     #  Setup Configuration
@@ -448,23 +451,33 @@ def main():
     if infer_runner and eval_runner and eval_daemon:
         heartbeat = HeartBeatManager(cfg['work_dir'])
         stop_event, hb_thread = heartbeat.start_heartbeat()
+        eval_status = dict(failed_tasks=0, error=None)
 
-        eval_thread = threading.Thread(target=_run_eval_tasks,
-                                       args=(eval_runner, eval_tasks),
+        def _record_eval_tasks():
+            try:
+                eval_status['failed_tasks'] = _run_eval_tasks(
+                    eval_runner, eval_tasks)
+            except Exception as e:
+                eval_status['error'] = e
+
+        eval_thread = threading.Thread(target=_record_eval_tasks,
                                        daemon=True)
         eval_thread.start()
 
-        infer_runner(infer_tasks)
+        failed_tasks += infer_runner(infer_tasks)
 
         stop_event.set()
         hb_thread.join()
         logger.info('All infer tasks finished, stop heartbeat.')
         eval_thread.join()
+        failed_tasks += eval_status['failed_tasks']
+        if eval_status['error'] is not None:
+            raise eval_status['error']
     else:
         if infer_runner is not None:
-            infer_runner(infer_tasks)
+            failed_tasks += infer_runner(infer_tasks)
         if eval_runner is not None:
-            _run_eval_tasks(eval_runner, eval_tasks)
+            failed_tasks += _run_eval_tasks(eval_runner, eval_tasks)
 
     # save to station
     if args.station_path is not None or cfg.get('station_path') is not None:
@@ -512,6 +525,10 @@ def main():
                 show_progress=True,
                 print_summary=True)
             logger.info(f'write repeat analysis to {osp.abspath(output_path)}')
+
+    if failed_tasks:
+        logger.error(f'{failed_tasks} OpenCompass task(s) failed.')
+        raise SystemExit(1)
 
 
 if __name__ == '__main__':
