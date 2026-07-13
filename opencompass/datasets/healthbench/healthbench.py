@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import hashlib
 import json
 import os
@@ -224,7 +226,7 @@ def _compute_clipped_stats(
         ]
         return np.std(bootstrap_means)
     else:
-        raise ValueError(f'Unknown {stat =}')
+        raise ValueError(f'Unknown {stat=}')
 
 
 def _aggregate_get_clipped_mean(
@@ -245,7 +247,7 @@ def _aggregate_get_clipped_mean(
     final_metrics = {}
     for name, values in name2values.items():
         for stat in ['mean', 'n_samples', 'bootstrap_std']:
-            key = name if stat == 'mean' else f'{name}:{stat}'
+            key = name if stat == 'mean' else name + ':' + stat
             final_metrics[key] = _compute_clipped_stats(values, stat)
     return EvalResult(
         score=final_metrics.pop('score', None),

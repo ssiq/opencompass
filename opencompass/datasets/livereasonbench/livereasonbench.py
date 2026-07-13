@@ -1,4 +1,6 @@
 # Edited from the official SimpleQA config: https://github.com/openai/simple-evals/blob/main/simpleqa_eval.py # noqa E501
+from __future__ import annotations
+
 import json
 import os
 import random

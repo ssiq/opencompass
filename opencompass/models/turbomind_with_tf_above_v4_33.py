@@ -1,5 +1,7 @@
 # flake8: noqa
 # yapf: disable
+from __future__ import annotations
+
 import copy
 import os
 import time

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import time
 from typing import Dict, List, Optional, Union
@@ -227,8 +229,8 @@ class OpenAISDKStreaming(OpenAISDK):
                 # Add timeout check for stuck streams
                 if current_time - start_time > self.timeout:
                     log_with_thread(
-                        f'Streaming timeout after '
-                        f'{current_time - start_time:.1f}s, '
+                        'Streaming timeout after '
+                        '{:.1f}s, '.format(current_time - start_time) +
                         f'chunks processed: {chunk_count}', 'warning')
                     break
 
@@ -260,16 +262,16 @@ class OpenAISDKStreaming(OpenAISDK):
                     if self.verbose:
                         print()  # Add newline after streaming complete
                         elapsed = current_time - start_time
-                        log_with_thread(
-                            f'Streaming finished with reason: '
-                            f'{chunk.choices[0].finish_reason}, '
-                            f'chunks: {chunk_count}, elapsed: {elapsed:.1f}s')
+                        log_with_thread(f'Streaming finished with reason: '
+                                        f'{chunk.choices[0].finish_reason}, '
+                                        'chunks: {}, elapsed: {:.1f}s'.format(
+                                            chunk_count, elapsed))
                     break
 
         except Exception as e:
             elapsed = time.time() - start_time
             log_with_thread(
-                f'Error during streaming after {elapsed:.1f}s, '
+                'Error during streaming after {:.1f}s, '.format(elapsed) +
                 f'chunks: {chunk_count}: {e}', 'error')
             import traceback
             log_with_thread(
@@ -294,8 +296,9 @@ class OpenAISDKStreaming(OpenAISDK):
             if finish_reason is None:
                 elapsed = time.time() - start_time
                 log_with_thread(
-                    f'Stream ended without finish_reason (truncated). '
-                    f'elapsed={elapsed:.1f}s chunks={chunk_count} '
+                    'Stream ended without finish_reason (truncated). '
+                    'elapsed={:.1f}s '.format(elapsed) +
+                    f'chunks={chunk_count} '
                     f'content_len={sum(len(x) for x in completion_chunks)} '
                     f'reasoning_len={len(reasoning_content)}',
                     'error',

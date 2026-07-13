@@ -1,6 +1,8 @@
 # Copyright (c) 2024, BigCodeBench and its contributors.
 # Copyright (c) 2023, OpenCompass and its contributors.
 
+from __future__ import annotations
+
 import os
 import time
 from concurrent.futures._base import CancelledError

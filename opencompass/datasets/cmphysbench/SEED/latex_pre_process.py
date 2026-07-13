@@ -1,6 +1,8 @@
 # flake8: noqa
 # This file is used to pre-process input latex expressions
 # You only need a "master_convert()"
+from __future__ import annotations
+
 import re
 
 import timeout_decorator

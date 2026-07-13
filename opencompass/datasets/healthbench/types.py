@@ -1,8 +1,10 @@
-from dataclasses import dataclass, field
-from typing import Any
+from __future__ import annotations
 
-Message = dict[str, Any]  # keys role, content
-MessageList = list[Message]
+from dataclasses import dataclass, field
+from typing import Any, Dict, List
+
+Message = Dict[str, Any]  # keys role, content
+MessageList = List[Message]
 
 
 @dataclass

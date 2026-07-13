@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import platform
 import socket
@@ -98,7 +100,7 @@ def check_network_connectivity(
 
     # Generate detailed message including proxy information
     status_msg = (
-        f'Network Status:\n'
+        'Network Status:\n'
         f"Socket Test: {'Success' if is_socket_connected else 'Failed'}\n"
         f"HTTP Test (via {'Proxy' if proxies else 'Direct'}): "
         f"{'Success' if is_http_connected else 'Failed'}\n"

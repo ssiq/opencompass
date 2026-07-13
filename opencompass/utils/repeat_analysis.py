@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import gzip
 import json
 import math
@@ -720,7 +722,7 @@ def _format_analysis_summary_table(report: Dict[str, Any]) -> List[List[str]]:
 
         def _fmt(count, total):
             pct = 100.0 * count / total if total else 0
-            return f'{pct:.2f}% ({count})'
+            return '%.2f%% (%s)' % (pct, count)
 
         if with_reasoning:
             table.append([
@@ -746,7 +748,7 @@ def _format_analysis_summary_table(report: Dict[str, Any]) -> List[List[str]]:
 
     def _fmt_overall(count, total):
         pct = 100.0 * count / total if total else 0
-        return f'{pct:.2f}% ({count})'
+        return '%.2f%% (%s)' % (pct, count)
 
     if with_reasoning:
         table.append([

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import time
 from typing import Any
@@ -44,7 +46,7 @@ class ChatCompletionSampler(SamplerBase):
         new_image = {
             'type': 'image_url',
             'image_url': {
-                'url': f'data:image/{format};{encoding},{image}',
+                'url': 'data:image/' + format + ';' + encoding + ',' + image,
             },
         }
         return new_image
