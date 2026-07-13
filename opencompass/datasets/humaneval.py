@@ -13,8 +13,16 @@ from datasets import Dataset
 from opencompass.openicl.icl_evaluator import BaseEvaluator
 from opencompass.registry import LOAD_DATASET
 from opencompass.utils import get_data_path
+from opencompass.utils.text_postprocessors import extract_non_reasoning_content
 
 from .base import BaseDataset
+
+
+def _remove_reasoning_content(text: str) -> str:
+    if '<think>' in text or '</think>' in text:
+        return extract_non_reasoning_content(text)
+    return text
+
 
 HUMANEVAL_IMPORT_ERROR = '''\
 Please install human_eval use following steps:
@@ -180,12 +188,14 @@ class HumanEvalPlusEvaluator(BaseEvaluator):
 
 
 def humaneval_postprocess_v2(text: str) -> str:
+    text = _remove_reasoning_content(text)
     blocks = re.findall(r'```\w*\n(.*?)```', text, re.DOTALL)
     if len(blocks) >= 1:
         text = blocks[0]
     return text.lstrip()
 
 def humaneval_postprocess_v3(text: str) -> str:
+    text = _remove_reasoning_content(text)
     blocks = re.findall(r'```\w*\n(.*?)```', text, re.DOTALL)
     if len(blocks) >= 1:
         text = blocks[-1]

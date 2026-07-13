@@ -2,6 +2,7 @@ import unittest
 
 from opencompass.datasets.humaneval import (humaneval_postprocess_v2,
                                             humaneval_postprocess_v3)
+from opencompass.datasets.mbpp import MBPPEvaluator, MBPPEvaluator2
 
 
 class TestHumanevalPostprocess(unittest.TestCase):
@@ -71,6 +72,67 @@ class TestHumanevalPostprocess(unittest.TestCase):
         expected = 'value = x - int(x)\n    return value\n'
         self.assertEqual(humaneval_postprocess_v2(raw), expected)
         self.assertEqual(humaneval_postprocess_v3(raw), expected)
+
+    def test_humaneval_postprocess_ignores_reasoning_code_block(self):
+        raw = '\n'.join([
+            '<think>',
+            'Try a candidate first:',
+            '```python',
+            '    return "reasoning-code"',
+            '```',
+            '</think>',
+            'Final answer:',
+            '```python',
+            '    return "final-code"',
+            '```',
+        ])
+
+        self.assertEqual(humaneval_postprocess_v2(raw),
+                         'return "final-code"\n')
+        self.assertEqual(humaneval_postprocess_v3(raw),
+                         'return "final-code"\n')
+
+    def test_mbpp_postprocess_ignores_reasoning_code_block(self):
+        raw = '\n'.join([
+            '<think>',
+            'Try a candidate first:',
+            '```python',
+            'def solution():',
+            '    return "reasoning-code"',
+            '```',
+            '</think>',
+            'Final answer:',
+            '```python',
+            'def solution():',
+            '    return "final-code"',
+            '```',
+        ])
+
+        self.assertEqual(MBPPEvaluator()._process_answer(raw), '\n'.join([
+            'def solution():',
+            '    return "final-code"',
+        ]))
+
+    def test_mbpp_v2_postprocess_ignores_reasoning_code_block(self):
+        raw = '\n'.join([
+            '<think>',
+            'Try a candidate first:',
+            '```python',
+            'def solution():',
+            '    return "reasoning-code"',
+            '```',
+            '</think>',
+            'Final answer:',
+            '```python',
+            'def solution():',
+            '    return "final-code"',
+            '```',
+        ])
+
+        self.assertEqual(MBPPEvaluator2()._process_answer(raw), '\n'.join([
+            'def solution():',
+            '    return "final-code"',
+        ]))
 
 
 if __name__ == '__main__':

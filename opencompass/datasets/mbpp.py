@@ -18,8 +18,15 @@ from datasets import Dataset, DatasetDict, concatenate_datasets, load_dataset
 from opencompass.openicl.icl_evaluator import BaseEvaluator
 from opencompass.registry import ICL_EVALUATORS, LOAD_DATASET
 from opencompass.utils import get_data_path
+from opencompass.utils.text_postprocessors import extract_non_reasoning_content
 
 from .base import BaseDataset
+
+
+def _remove_reasoning_content(text: str) -> str:
+    if '<think>' in text or '</think>' in text:
+        return extract_non_reasoning_content(text)
+    return text
 
 
 @LOAD_DATASET.register_module()
@@ -307,6 +314,7 @@ class MBPPEvaluator(BaseEvaluator):
                 return {f'mbpp_plus_{k}': score[k] * 100 for k in score}
 
     def _process_answer(self, text):
+        text = _remove_reasoning_content(text)
         patterns = [
             r"\[BEGIN\]\s*'(.*)'\s*\[DONE\]",
             r"BEGIN\s*'(.*)'\s*\[DONE\]",
@@ -355,6 +363,7 @@ class MBPPEvaluator2(MBPPEvaluator):
     """Better use for WizardCoder evaluation."""
 
     def _process_answer(self, text):
+        text = _remove_reasoning_content(text)
         if '```' in text:
             blocks = re.findall(r'```(.*?)```', text, re.DOTALL)
             if len(blocks) == 0:
